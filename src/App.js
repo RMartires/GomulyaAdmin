@@ -53,6 +53,7 @@ class App extends Component {
 
     // console.log(data);
     // console.log(data.length);
+    console.log("loaded");
 
     // for (let i = 0; i < data.length; i++) {
     //   let todaysDate = moment().format("YYYY-MM-DD");
@@ -72,12 +73,12 @@ class App extends Component {
       let data = this.state.data;
       let data2 = [];
       let tempObj = {};
-      console.log(data);
+      // console.log(data);
 
       for (let i = 0; i < data.length; i++) {
-        // let todaysDate = moment().format("YYYY-MM-DD");
-        let todaysDate = "2020-09-12";
-        // console.log(data.length);
+        let todaysDate = moment().format("YYYY-MM-DD");
+        // let todaysDate = "2020-09-06";
+        // console.log(todaysDate);
         data[i].calendar.forEach((x) => {
           if (x === todaysDate) {
             tempObj = {
@@ -93,7 +94,7 @@ class App extends Component {
               email: data[i].email,
               calendar: data[i].calendar,
             };
-            console.log(data[i].calendar);
+            // console.log(data[i].calendar);
             data2.push(tempObj);
           }
         });
@@ -143,7 +144,7 @@ class App extends Component {
 */
     const csvFromArrayOfObjects = convertArrayToCSV(data2);
 
-    console.log(csvFromArrayOfObjects);
+    // console.log(csvFromArrayOfObjects);
 
     // console.log(data2);
 
