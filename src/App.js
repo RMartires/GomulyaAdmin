@@ -10,29 +10,17 @@ let filteredData = [];
 
 class App extends Component {
   state = {
-    data: null,
-    finalData: null,
+    data: null, //To Store initial data
+    finalData: null, // To Store Final data which becomes a CSV
   };
 
+  // Runs as soon as the website loads
   componentDidMount() {
-    let emails = [];
-    let data1 = [];
-
-    firebase
-      .firestore()
-      .collection("orders")
-      .get()
-      .then(function (querySnapshot) {
-        querySnapshot.forEach(function (doc) {
-          // doc.data() is never undefined for query doc snapshots
-          // console.log(doc.data().email);
-          emails.push(doc.data().email);
-        });
-      });
+    let data1 = []; // Array where the user order details are stored.
 
     // console.log(emails);
 
-    firebase
+    firebase // Call to Firebase to retrieve all users who have placed an order
       .firestore()
       .collection("orders")
       .get()
@@ -40,11 +28,11 @@ class App extends Component {
         querySnapshot.forEach((doc) => {
           // doc.data() is never undefined for query doc snapshots
 
-          data1.push(doc.data());
+          data1.push(doc.data()); // Stores the user details in array data1
           // console.log(data1);
         });
         this.setState({
-          data: data1,
+          data: data1, // changes the data property in state and adds all the retrieved array data into it.
         });
       })
       .catch(function (error) {
@@ -66,19 +54,22 @@ class App extends Component {
     // }
   }
 
+  // Runs after the data has been retrieved
   componentDidUpdate(prevProps, prevState) {
     if (prevState.data !== this.state.data) {
       //START
 
-      let data = this.state.data;
-      let data2 = [];
+      let data = this.state.data; //stores data of user orders that has been retrieved
+      let data2 = []; // Orders with today as a delivery day are stored here
       let tempObj = {};
       // console.log(data);
 
       for (let i = 0; i < data.length; i++) {
-        let todaysDate = moment().format("YYYY-MM-DD");
+        let todaysDate = moment().format("YYYY-MM-DD"); // Moment.js has been used here to determine todays date
         // let todaysDate = "2020-09-06";
         // console.log(todaysDate);
+
+        //If orders delivery day is today, the loop below will add it into a new array data2 which has been defined above
         data[i].calendar.forEach((x) => {
           if (x === todaysDate) {
             tempObj = {
@@ -101,43 +92,46 @@ class App extends Component {
         // console.log(todaysDate);
       }
 
+      // Once the sorting of which orders are to be delivered today is done, the new data with orders to be delivered today are stored in data2 array and that is updated in the state
       this.setState({
         finalData: data2,
       });
 
       // console.log(data2);
+      // The function below is called and the final array of sorted orders is passed into it. This function generates the .csv file and automatically downloads it
       this.finalFunction(data2);
       // //END
     }
   }
 
+  //This file converts array data into CSV and downloads it automatically
   finalFunction = (data2) => {
     const { convertArrayToCSV } = require("convert-array-to-csv");
     const converter = require("convert-array-to-csv");
 
-    const dataObjects = [
-      {
-        number: 1,
-        first: "Mark",
-        last: "Otto",
-        handle: "@mdo",
-        calendar: ["dsds", "dsds"],
-      },
-      {
-        number: 2,
-        first: "Jacob",
-        last: "Thornton",
-        handle: "@fat",
-        calendar: ["dsds", "dsds"],
-      },
-      {
-        number: 3,
-        first: "Larry",
-        last: "the Bird",
-        handle: "@twitter",
-        calendar: ["dsds", "dsds"],
-      },
-    ];
+    // const dataObjects = [
+    //   {
+    //     number: 1,
+    //     first: "Mark",
+    //     last: "Otto",
+    //     handle: "@mdo",
+    //     calendar: ["dsds", "dsds"],
+    //   },
+    //   {
+    //     number: 2,
+    //     first: "Jacob",
+    //     last: "Thornton",
+    //     handle: "@fat",
+    //     calendar: ["dsds", "dsds"],
+    //   },
+    //   {
+    //     number: 3,
+    //     first: "Larry",
+    //     last: "the Bird",
+    //     handle: "@twitter",
+    //     calendar: ["dsds", "dsds"],
+    //   },
+    // ];
 
     /*
   const csvFromArrayOfObjects  = 'number,first,last,handle\n1,Mark,Otto,@mdo\n2,Jacob,Thornton,@fat\n3,Larry,the Bird,@twitter\n';
