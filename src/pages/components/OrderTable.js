@@ -63,7 +63,7 @@ export default function UserTable() {
           order={currentorder}
           setShow={setShow}
           getOrders={getOrders}
-          setCurrentuser={setCurrentorder}
+          setCurrentorder={setCurrentorder}
         />
       ) : (
         ""
@@ -146,14 +146,15 @@ function OrderModel(props) {
   const { register, handleSubmit, errors } = useForm();
 
   const onSubmit = async (data) => {
-    data.name = props.user.name;
+    //console.log(data);
+    data.name = props.order.name;
     await firebase
       .firestore()
-      .collection("users")
-      .doc(props.user.email)
+      .collection("orders")
+      .doc(props.order.email)
       .set(data);
-    props.getUsers();
-    props.setCurrentuser(data);
+    props.getOrders();
+    props.setCurrentorder(data);
     setEdit(false);
   };
 
