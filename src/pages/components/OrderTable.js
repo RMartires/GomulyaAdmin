@@ -194,7 +194,8 @@ function OrderModel(props) {
     try {
       setSelectedDates(props.order.calendar);
     } catch (err) {}
-  }, [props, editcalendar]);
+    setCalendar(props.order.calendar);
+  }, [props, editcalendar, edit]);
 
   const chnageCalendar = (date) => {
     var tempdate = moment(date).format("YYYY-MM-D");
@@ -211,13 +212,20 @@ function OrderModel(props) {
   };
 
   const onSubmit = async (data) => {
-    //console.log(data);
-    data.name = props.order.name;
+    console.log(props.order);
+    var send = props.order;
+    send.frequency = data.frequency;
+    send.orderStatus = data.orderStatus;
+    send.paid = data.paid;
+    send.price = data.price;
+    send.quantity = data.quantity;
+    send.startDate = data.startDate;
+    console.log(send);
     await firebase
       .firestore()
       .collection("orders")
       .doc(props.order.phoneNumber)
-      .set(data);
+      .set(send);
     props.getOrders();
     props.setCurrentorder(data);
     setEdit(false);
@@ -267,8 +275,8 @@ function OrderModel(props) {
                   required: true,
                 })}
               >
-                <option value={true}>true</option>
-                <option value={false}>false</option>
+                <option value={"true"}>true</option>
+                <option value={"false"}>false</option>
               </select>
               {errors.orderStatus && <p>This field is required</p>}
               <label>paid status</label>
