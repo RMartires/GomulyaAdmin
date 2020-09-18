@@ -10,7 +10,7 @@ class App extends Component {
         <BrowserRouter>
           <Switch>
             <Route
-              path="/admin"
+              path="/"
               component={() => {
                 return <AdminDashboard />;
               }}

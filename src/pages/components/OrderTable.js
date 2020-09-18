@@ -9,7 +9,10 @@ import {
   Spinner,
 } from "react-bootstrap";
 import { useForm } from "react-hook-form";
+import Calendar from "react-calendar";
+import moment from "moment";
 import "./Users.css";
+import "react-calendar/dist/Calendar.css";
 const firebase = require("firebase");
 
 export default function UserTable() {
@@ -42,13 +45,17 @@ export default function UserTable() {
       });
   }
 
-  async function toggelPaidStatus(order) {
-    if (order.paid === "pending") {
-      order.paid = "complete";
+  async function toggelOrderStatus(order) {
+    if (order.orderStatus) {
+      order.orderStatus = false;
     } else {
-      order.paid = "pending";
+      order.orderStatus = true;
     }
-    await firebase.firestore().collection("orders").doc(order.email).set(order);
+    await firebase
+      .firestore()
+      .collection("orders")
+      .doc(order.phoneNumber)
+      .set(order);
     getOrders();
     setShowpaid(false);
     setShow(false);
@@ -72,18 +79,20 @@ export default function UserTable() {
         show={confirm}
         onHide={() => {
           setConfirm(false);
+          setShowpaid(false);
+          setShow(false);
         }}
         centered
       >
         <Modal.Body>
-          Are you sure you want to update the paid status of{" "}
+          Are you sure you want to update the Order status of{" "}
           {currentorder ? currentorder.name : ""}
         </Modal.Body>
         <Modal.Footer>
           <Button
             style={{ marginLeft: "auto" }}
             variant="success"
-            onClick={toggelPaidStatus.bind(this, currentorder)}
+            onClick={toggelOrderStatus.bind(this, currentorder)}
           >
             Change
           </Button>
@@ -95,7 +104,7 @@ export default function UserTable() {
             <thead>
               <tr>
                 <th>Name</th>
-                <th>Paid</th>
+                <th>Order status</th>
                 <th className="tablecontent">Frequency</th>
                 <th className="tablecontent">Phone Number</th>
               </tr>
@@ -122,10 +131,12 @@ export default function UserTable() {
                           setShowpaid(true);
                         }}
                         style={{
-                          color: order.paid === "complete" ? "green" : "red",
+                          color: order.orderStatus ? "green" : "red",
                         }}
                       >
-                        {order.paid}
+                        {order.orderStatus !== undefined
+                          ? order.orderStatus.toString()
+                          : ""}
                       </td>
                       <td className="tablecontent">{order.frequency}</td>
                       <td className="tablecontent">{order.phoneNumber}</td>
@@ -143,7 +154,61 @@ export default function UserTable() {
 
 function OrderModel(props) {
   var [edit, setEdit] = useState(false);
+  var [editcalendar, setEditcalendar] = useState(false);
+  var [calendar, setCalendar] = useState(props.order.calendar);
   const { register, handleSubmit, errors } = useForm();
+
+  const setSelectedDates = (data) => {
+    data.forEach((d) => {
+      var element = document.querySelector(
+        `[aria-label="${moment(d).format("MMMM D, YYYY")}"]`
+      );
+      if (element) {
+        var tempCN = element.parentElement.className;
+        tempCN =
+          tempCN.split("react-calendar__tile")[0] +
+          " " +
+          tempCN.split("react-calendar__tile")[1];
+        element.parentElement.className = tempCN + " selected";
+      }
+    });
+  };
+
+  const setClassSelected = (d) => {
+    var element = document.querySelector(
+      `[aria-label="${moment(d).format("MMMM D, YYYY")}"]`
+    );
+    var defaultCN = "react-calendar__month-view__days__day";
+    var selctedCN = "react-calendar__month-view__days__day selected";
+
+    if (element) {
+      if (element.parentElement.className.includes("selected")) {
+        element.parentElement.className = defaultCN;
+      } else {
+        element.parentElement.className = selctedCN;
+      }
+    }
+  };
+
+  useEffect(() => {
+    try {
+      setSelectedDates(props.order.calendar);
+    } catch (err) {}
+  }, [props, editcalendar]);
+
+  const chnageCalendar = (date) => {
+    var tempdate = moment(date).format("YYYY-MM-D");
+    var tempcalendar = calendar;
+    if (calendar.includes(tempdate)) {
+      tempcalendar = tempcalendar.filter((x) => x !== tempdate);
+      setCalendar(tempcalendar);
+    } else {
+      tempcalendar.push(tempdate);
+      setCalendar(tempcalendar);
+    }
+    setClassSelected(tempdate);
+    //console.log(tempcalendar);
+  };
 
   const onSubmit = async (data) => {
     //console.log(data);
@@ -151,7 +216,7 @@ function OrderModel(props) {
     await firebase
       .firestore()
       .collection("orders")
-      .doc(props.order.email)
+      .doc(props.order.phoneNumber)
       .set(data);
     props.getOrders();
     props.setCurrentorder(data);
@@ -171,45 +236,87 @@ function OrderModel(props) {
         <h4>{props.order.name}</h4>
       </Modal.Header>
       {edit ? (
-        <Modal.Body>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <label>quantity</label>
-            <input
-              name="quantity"
-              defaultValue={props.order.quantity}
-              ref={register({ required: true, pattern: /[0-9]/ })}
-            />
-            {errors.quantity && (
-              <p>This field is required and should be an integer</p>
+        !editcalendar ? (
+          <Modal.Body>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <label>quantity</label>
+              <input
+                name="quantity"
+                defaultValue={props.order.quantity}
+                ref={register({ required: true, pattern: /[0-9]/ })}
+              />
+              {errors.quantity && (
+                <p>This field is required and should be an integer</p>
+              )}
+              <label>price</label>
+              <input
+                name="price"
+                defaultValue={props.order.price}
+                ref={register({
+                  required: true,
+                  pattern: /[0-9]/,
+                })}
+              />
+              {errors.price && <p>This field is required</p>}
+              <label>order status</label>
+              <select
+                className="select-css"
+                name="orderStatus"
+                defaultValue={props.order.orderStatus}
+                ref={register({
+                  required: true,
+                })}
+              >
+                <option value={true}>true</option>
+                <option value={false}>false</option>
+              </select>
+              {errors.orderStatus && <p>This field is required</p>}
+              <label>paid status</label>
+              <select
+                name="paid"
+                className="select-css"
+                defaultValue={props.order.paid}
+                ref={register({
+                  required: true,
+                })}
+              >
+                <option value={true}>true</option>
+                <option value={false}>false</option>
+              </select>
+              {errors.orderStatus && <p>This field is required</p>}
+              <label>frequency</label>
+              <input
+                name="frequency"
+                defaultValue={props.order.frequency}
+                ref={register({
+                  required: true,
+                })}
+              />
+              {errors.frequency && <p>This field is required</p>}
+              <label>startdate</label>
+              <input
+                name="startDate"
+                defaultValue={props.order.startDate}
+                ref={register({
+                  required: true,
+                })}
+              />
+              {errors.startDate && <p>This field is required</p>}
+              {/* {props.order.DayOfWeekForWeekly ? (
+              <div>
+                <label>DayOfWeekForWeekly</label>
+                <input
+                  name="DayOfWeekForWeekly"
+                  defaultValue={props.order.DayOfWeekForWeekly}
+                  ref={register({
+                    required: true,
+                  })}
+                />
+                {errors.DayOfWeekForWeekly && <p>This field is required</p>}
+              </div>
+            ) : (
+              ""
             )}
-            <label>price</label>
-            <input
-              name="price"
-              defaultValue={props.order.price}
-              ref={register({
-                required: true,
-                pattern: /[0-9]/,
-              })}
-            />
-            {errors.price && <p>This field is required</p>}
-            <label>paid</label>
-            <input
-              name="paid"
-              defaultValue={props.order.paid}
-              ref={register({
-                required: true,
-              })}
-            />
-            {errors.paid && <p>This field is required</p>}
-            <label>frequency</label>
-            <input
-              name="frequency"
-              defaultValue={props.order.frequency}
-              ref={register({
-                required: true,
-              })}
-            />
-            {errors.frequency && <p>This field is required</p>}
             <label>days</label>
             <input
               name="days"
@@ -227,58 +334,46 @@ function OrderModel(props) {
                 required: true,
               })}
             />
-            {errors.months && <p>This field is required</p>}
-            <label>startdate</label>
-            <input
-              name="startdate"
-              defaultValue={props.order.startdate}
-              ref={register({
-                required: true,
-              })}
-            />
-            {errors.startdate && <p>This field is required</p>}
-            {props.order.DayOfWeekForWeekly ? (
-              <div>
-                <label>DayOfWeekForWeekly</label>
-                <input
-                  name="DayOfWeekForWeekly"
-                  defaultValue={props.order.DayOfWeekForWeekly}
-                  ref={register({
-                    required: true,
-                  })}
-                />
-                {errors.DayOfWeekForWeekly && <p>This field is required</p>}
-              </div>
-            ) : (
-              ""
-            )}
+            {errors.months && <p>This field is required</p>} */}
+              <Button type="submit">Update</Button>
+            </form>
+          </Modal.Body>
+        ) : (
+          <Modal.Body>
             <label>calendar</label>
-            <input
-              name="calendar"
-              defaultValue={props.order.calendar}
-              ref={register({
-                required: true,
-              })}
+            <Calendar
+              showNavigation={false}
+              value={new Date()}
+              onChange={(value) => chnageCalendar(value)}
             />
-            {errors.calendar && <p>This field is required</p>}
-            <Button type="submit">Update</Button>
-          </form>
-        </Modal.Body>
+            <Button
+              variant="success"
+              onClick={async () => {
+                var data = props.order;
+                data.calendar = calendar;
+                await firebase
+                  .firestore()
+                  .collection("orders")
+                  .doc(props.order.phoneNumber)
+                  .set(data);
+                props.getOrders();
+                setEditcalendar(false);
+                setEdit(false);
+              }}
+              style={{ marginTop: "10px" }}
+            >
+              Save Changes
+            </Button>
+          </Modal.Body>
+        )
       ) : (
         <Modal.Body>
-          <h5>paid: {props.order.paid}</h5>
+          <h5>paid status: {props.order.paid}</h5>
+          <h5>order status: {props.order.orderStatus.toString()}</h5>
           <h5>price: {props.order.price}</h5>
           <h5>quantity: {props.order.quantity}</h5>
           <h5>frequency: {props.order.frequency}</h5>
-          <h5>months: {props.order.months}</h5>
-          <h5>days: {props.order.days}</h5>
-          {props.order.DayOfWeekForWeekly ? (
-            <h5>DayOfWeekForWeekly: {props.order.DayOfWeekForWeekly}</h5>
-          ) : (
-            ""
-          )}
-          <h5>startdate: {props.order.startdate}</h5>
-          <h5>calendar: {props.order.calendar}</h5>
+          <h5>startdate: {props.order.startDate}</h5>
           <div style={{ marginLeft: "auto", width: "min-content" }}>
             <Button
               variant="secondary"
@@ -289,6 +384,25 @@ function OrderModel(props) {
               Edit
             </Button>
           </div>
+          <Calendar showNavigation={false} value={new Date()} />
+          <div style={{ marginLeft: "auto", width: "min-content" }}>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setEdit(true);
+                setEditcalendar(true);
+              }}
+            >
+              Edit Calender
+            </Button>
+          </div>
+          {/* <h5>months: {props.order.months}</h5>
+          <h5>days: {props.order.days}</h5>
+          {props.order.DayOfWeekForWeekly ? (
+            <h5>DayOfWeekForWeekly: {props.order.DayOfWeekForWeekly}</h5>
+          ) : (
+            ""
+          )} */}
         </Modal.Body>
       )}
     </Modal>

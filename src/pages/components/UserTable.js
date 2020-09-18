@@ -104,7 +104,7 @@ function UserModel(props) {
     await firebase
       .firestore()
       .collection("users")
-      .doc(props.user.email)
+      .doc(props.user.phoneNumber)
       .set(data);
     props.getUsers();
     props.setCurrentuser(data);
@@ -130,7 +130,7 @@ function UserModel(props) {
             <input
               name="phoneNumber"
               defaultValue={props.user.phoneNumber}
-              ref={register({ required: true, maxLength: 10 })}
+              ref={register({ required: true })}
             />
             {errors.phoneNumber && (
               <p>This field is required and maxLength 10</p>
@@ -156,6 +156,15 @@ function UserModel(props) {
               })}
             />
             {errors.address && <p>This field is required</p>}
+            <label>City</label>
+            <input
+              name="city"
+              defaultValue={props.user.city}
+              ref={register({
+                required: true,
+              })}
+            />
+            {errors.city && <p>This field is required</p>}
             <Button type="submit">Update</Button>
           </form>
         </Modal.Body>
@@ -164,6 +173,7 @@ function UserModel(props) {
           <h5>Phone Number: {props.user.phoneNumber}</h5>
           <h5>Email: {props.user.email}</h5>
           <h5>Address: {props.user.address}</h5>
+          <h5>City: {props.user.city}</h5>
           <div style={{ marginLeft: "auto", width: "min-content" }}>
             <Button
               variant="secondary"
