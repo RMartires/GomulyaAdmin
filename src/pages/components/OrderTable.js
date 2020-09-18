@@ -172,6 +172,7 @@ function OrderModel(props) {
         element.parentElement.className = tempCN + " selected";
       }
     });
+    setCalendar(data);
   };
 
   const setClassSelected = (d) => {
@@ -194,7 +195,6 @@ function OrderModel(props) {
     try {
       setSelectedDates(props.order.calendar);
     } catch (err) {}
-    setCalendar(props.order.calendar);
   }, [props, editcalendar, edit]);
 
   const chnageCalendar = (date) => {
@@ -212,10 +212,9 @@ function OrderModel(props) {
   };
 
   const onSubmit = async (data) => {
-    console.log(props.order);
     var send = props.order;
     send.frequency = data.frequency;
-    send.orderStatus = data.orderStatus;
+    send.orderStatus = data.orderStatus === "true" ? true : false;
     send.paid = data.paid;
     send.price = data.price;
     send.quantity = data.quantity;
@@ -226,9 +225,10 @@ function OrderModel(props) {
       .collection("orders")
       .doc(props.order.phoneNumber)
       .set(send);
+    setEdit(false);
     props.getOrders();
     props.setCurrentorder(data);
-    setEdit(false);
+    props.setShow(false);
   };
 
   return (
@@ -275,8 +275,8 @@ function OrderModel(props) {
                   required: true,
                 })}
               >
-                <option value={"true"}>true</option>
-                <option value={"false"}>false</option>
+                <option value={true}>true</option>
+                <option value={false}>false</option>
               </select>
               {errors.orderStatus && <p>This field is required</p>}
               <label>paid status</label>
@@ -353,6 +353,8 @@ function OrderModel(props) {
               showNavigation={false}
               value={new Date()}
               onChange={(value) => chnageCalendar(value)}
+              minDate={moment().add(2, "days")._d}
+              maxDate={moment().add(1, "month").date(1).subtract(1, "day")._d}
             />
             <Button
               variant="success"
@@ -392,7 +394,12 @@ function OrderModel(props) {
               Edit
             </Button>
           </div>
-          <Calendar showNavigation={false} value={new Date()} />
+          <Calendar
+            showNavigation={false}
+            value={new Date()}
+            minDate={moment().add(2, "days")._d}
+            maxDate={moment().add(1, "month").date(1).subtract(1, "day")._d}
+          />
           <div style={{ marginLeft: "auto", width: "min-content" }}>
             <Button
               variant="secondary"
