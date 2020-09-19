@@ -111,6 +111,17 @@ function UserModel(props) {
     setEdit(false);
   };
 
+  const deleteUser = async () => {
+    await firebase
+      .firestore()
+      .collection("users")
+      .doc(props.user.phoneNumber)
+      .delete();
+    props.getUsers();
+    setEdit(false);
+    props.setShow(false);
+  };
+
   return (
     <Modal
       show={props.show}
@@ -167,6 +178,13 @@ function UserModel(props) {
             {errors.city && <p>This field is required</p>}
             <Button type="submit">Update</Button>
           </form>
+          <Button
+            variant="danger"
+            onClick={deleteUser.bind(this)}
+            style={{ marginTop: "10px" }}
+          >
+            Delete
+          </Button>
         </Modal.Body>
       ) : (
         <Modal.Body>

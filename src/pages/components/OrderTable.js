@@ -211,6 +211,17 @@ function OrderModel(props) {
     //console.log(tempcalendar);
   };
 
+  const deleteOrder = async () => {
+    await firebase
+      .firestore()
+      .collection("orders")
+      .doc(props.order.phoneNumber)
+      .delete();
+    setEdit(false);
+    props.getOrders();
+    props.setShow(false);
+  };
+
   const onSubmit = async (data) => {
     var send = props.order;
     send.frequency = data.frequency;
@@ -345,6 +356,13 @@ function OrderModel(props) {
             {errors.months && <p>This field is required</p>} */}
               <Button type="submit">Update</Button>
             </form>
+            <Button
+              variant="danger"
+              onClick={deleteOrder.bind(this)}
+              style={{ marginTop: "10px" }}
+            >
+              Delete
+            </Button>
           </Modal.Body>
         ) : (
           <Modal.Body>

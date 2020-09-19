@@ -195,8 +195,17 @@ function EmailModal(props) {
       <Modal.Body>
         <form onSubmit={handleSubmit(onSubmit)}>
           <label>To</label>
-          <input name="to" ref={register({ required: true })} type="email" />
-          {errors.to && <p>This field is required and should be an integer</p>}
+          <input
+            name="to"
+            ref={register({
+              required: true,
+              pattern: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+            })}
+            type="email"
+          />
+          {errors.to && (
+            <p>This field is required and should be a valid email</p>
+          )}
           <Button variant="info" type="submit">
             <Spinner
               as="span"
