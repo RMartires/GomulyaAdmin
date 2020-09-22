@@ -85,7 +85,7 @@ export default function OrderModel(props) {
     send.price = data.price;
     send.quantity = data.quantity;
     send.startDate = data.startDate;
-    console.log(send);
+    send.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
     await firebase
       .firestore()
       .collection("orders")
@@ -234,6 +234,7 @@ export default function OrderModel(props) {
               onClick={async () => {
                 var data = props.order;
                 data.calendar = calendar;
+                data.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
                 await firebase
                   .firestore()
                   .collection("orders")

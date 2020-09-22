@@ -9,6 +9,7 @@ export default class AdminDashboard extends Component {
     UserTable: true,
     notify: false,
     email: false,
+    select: false,
   };
 
   setNotify = (condition) => {
@@ -60,7 +61,6 @@ export default class AdminDashboard extends Component {
             Notify
           </Button>
         </Navbar>
-        <br />
         {this.state.UserTable ? <UserTable /> : <OrderTable />}
       </div>
     );

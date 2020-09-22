@@ -7,6 +7,8 @@ import {
   Modal,
   Button,
   Spinner,
+  DropdownButton,
+  Dropdown,
 } from "react-bootstrap";
 import "./Users.css";
 import OrderModal from "./OrderModal";
@@ -19,16 +21,18 @@ export default function UserTable() {
   const [showpaid, setShowpaid] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [sortby, Setsortby] = useState("asc");
 
   useEffect(() => {
     getOrders();
-  }, []);
+  }, [sortby]);
 
   function getOrders() {
     var temporders = [];
     firebase
       .firestore()
       .collection("orders")
+      .orderBy("updatedAt", sortby)
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
@@ -61,6 +65,28 @@ export default function UserTable() {
 
   return (
     <Container fluid>
+      <Row>
+        <Col>
+          <DropdownButton
+            id="dropdown-sort"
+            title={`sort by: ${sortby}`}
+            variant="light"
+            style={{
+              marginLeft: "auto",
+              marginBottom: "10px",
+              marginTop: "10px",
+              width: "max-content",
+            }}
+          >
+            <Dropdown.Item onClick={Setsortby.bind(this, "asc")}>
+              Asc
+            </Dropdown.Item>
+            <Dropdown.Item onClick={Setsortby.bind(this, "desc")}>
+              Desc
+            </Dropdown.Item>
+          </DropdownButton>
+        </Col>
+      </Row>
       {currentorder ? (
         <OrderModal
           show={show && !showpaid}
@@ -100,6 +126,7 @@ export default function UserTable() {
           <Table striped hover size="sm">
             <thead>
               <tr>
+                <th>#</th>
                 <th>Name</th>
                 <th>Order status</th>
                 <th className="tablecontent">Frequency</th>
@@ -113,7 +140,7 @@ export default function UserTable() {
                   style={{ marginRight: "auto", marginLeft: "auto" }}
                 />
               ) : (
-                orders.map((order) => {
+                orders.map((order, index) => {
                   return (
                     <tr
                       onClick={() => {
@@ -121,6 +148,7 @@ export default function UserTable() {
                         setShow(true);
                       }}
                     >
+                      <td>{index + 1}</td>
                       <td>{order.name}</td>
                       <td
                         onClick={() => {

@@ -10,6 +10,7 @@ export default function UserModel(props) {
 
   const onSubmit = async (data) => {
     data.name = props.user.name;
+    data.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
     await firebase
       .firestore()
       .collection("users")
@@ -74,6 +75,7 @@ export default function UserModel(props) {
               ref={register({
                 required: true,
               })}
+              type="text"
             />
             {errors.address && <p>This field is required</p>}
             <label>City</label>
