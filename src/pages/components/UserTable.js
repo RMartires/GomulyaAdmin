@@ -10,6 +10,8 @@ import {
   Dropdown,
 } from "react-bootstrap";
 import "./Users.css";
+import BlockUi from "react-block-ui";
+import "react-block-ui/style.css";
 import UserModal from "./UserModal";
 const firebase = require("firebase");
 
@@ -20,7 +22,8 @@ export default function UserTable(props) {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(false);
   const [sortby, Setsortby] = useState("asc");
-  const [selectedUsers, setSelectedUserd] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [blocking, setBlocking] = useState(false);
 
   useEffect(() => {
     getUsers();
@@ -47,22 +50,44 @@ export default function UserTable(props) {
 
   async function selectItem(con, user) {
     if (con) {
-      setSelectedUserd([...selectedUsers, user]);
+      setSelectedUsers([...selectedUsers, user]);
     } else {
-      setSelectedUserd(selectedUsers.filter((x) => x !== user));
+      setSelectedUsers(selectedUsers.filter((x) => x !== user));
     }
     await setTimeout(100);
     setShow(false);
-    console.log(selectedUsers);
+    //console.log(selectedUsers);
   }
 
   async function DeleteUsers() {
-    await new Promise((res, rej) => {
-      var deleted = 0;
-      selectedUsers.forEach((user) => {
-        res(true);
-      });
-    });
+    try {
+      setBlocking(true);
+
+      var selectedUsersStrings = selectedUsers.map((x) => `${x.phoneNumber}`);
+      //console.log(selectedUsersStrings);
+      var formdata = new URLSearchParams(); //FormData();
+      formdata.append("data", selectedUsersStrings);
+      formdata.append("collection", "users");
+
+      var res = await fetch(
+        "http://localhost:5001/firstproject-3ca46/us-central1/deleteCollections",
+        // "https://us-central1-firstproject-3ca46.cloudfunctions.net/deleteCollections",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+          },
+          body: formdata,
+        }
+      );
+
+      setBlocking(false);
+      setSelectedUsers([]);
+      setSelected(false);
+      getUsers();
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   return (
@@ -101,6 +126,7 @@ export default function UserTable(props) {
             }}
             onClick={() => {
               setSelected(false);
+              setSelectedUsers([]);
             }}
           >
             Cancle
@@ -140,54 +166,60 @@ export default function UserTable(props) {
       )}
       <Row>
         <Col>
-          <Table striped hover size="sm">
-            <thead>
-              <tr>
-                {selected ? <th>#</th> : ""}
-                <th>No.</th>
-                <th>Name</th>
-                <th>Contact</th>
-                <th className="tablecontent">Email</th>
-                <th className="tablecontent">Address</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <Spinner
-                  animation="border"
-                  style={{ marginRight: "auto", marginLeft: "auto" }}
-                />
-              ) : (
-                users.map((user, index) => {
-                  return (
-                    <tr
-                      onClick={() => {
-                        setCurrentuser(user);
-                        setShow(true);
-                      }}
-                    >
-                      {selected ? (
-                        <input
-                          type="checkbox"
-                          style={{ marginTop: "10px" }}
-                          onClick={(e) => {
-                            selectItem(e.target.checked, user);
-                          }}
-                        />
-                      ) : (
-                        ""
-                      )}
-                      <td>{index + 1}</td>
-                      <td>{user.name}</td>
-                      <td>{user.phoneNumber}</td>
-                      <td className="tablecontent">{user.email}</td>
-                      <td className="tablecontent">{user.address}</td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </Table>
+          <BlockUi
+            tag="div"
+            blocking={blocking}
+            message="Deleting, please wait"
+          >
+            <Table striped hover size="sm">
+              <thead>
+                <tr>
+                  {selected ? <th>#</th> : ""}
+                  <th>No.</th>
+                  <th>Name</th>
+                  <th>Contact</th>
+                  <th className="tablecontent">Email</th>
+                  <th className="tablecontent">Address</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <Spinner
+                    animation="border"
+                    style={{ marginRight: "auto", marginLeft: "auto" }}
+                  />
+                ) : (
+                  users.map((user, index) => {
+                    return (
+                      <tr
+                        onClick={() => {
+                          setCurrentuser(user);
+                          setShow(true);
+                        }}
+                      >
+                        {selected ? (
+                          <input
+                            type="checkbox"
+                            style={{ marginTop: "10px" }}
+                            onClick={(e) => {
+                              selectItem(e.target.checked, user);
+                            }}
+                          />
+                        ) : (
+                          ""
+                        )}
+                        <td>{index + 1}</td>
+                        <td>{user.name}</td>
+                        <td>{user.phoneNumber}</td>
+                        <td className="tablecontent">{user.email}</td>
+                        <td className="tablecontent">{user.address}</td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </Table>
+          </BlockUi>
         </Col>
       </Row>
     </Container>

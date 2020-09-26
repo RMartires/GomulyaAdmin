@@ -80,32 +80,37 @@ function NotifyModal(props) {
     "margao",
     "vasco",
   ];
+  const [selectedlocations, setSelectedlocations] = useState(locations);
+
+  const selectItem = (con, value) => {
+    if (con) {
+      setSelectedlocations([...selectedlocations, value]);
+    } else {
+      setSelectedlocations(selectedlocations.filter((x) => x !== value));
+    }
+  };
 
   const onSubmit = async (data) => {
+    console.log(`notifying ${selectedlocations}`);
     setSend(true);
     console.log(data);
     try {
-      if (data.location === "all") {
-        var doneSending = 0;
-        await new Promise((res, rej) => {
-          locations.forEach(async (loc) => {
-            await fetch(
-              `https://us-central1-firstproject-3ca46.cloudfunctions.net/Notify?title=${data.title}&body=${data.body}&topic=${loc}`
-            );
-            doneSending = doneSending + 1;
-            if (doneSending === locations.length) {
-              res("sent");
-            }
-          });
+      var doneSending = 0;
+      await new Promise((res, rej) => {
+        selectedlocations.forEach(async (loc) => {
+          await fetch(
+            `https://us-central1-firstproject-3ca46.cloudfunctions.net/Notify?title=${data.title}&body=${data.body}&topic=${loc}`
+          );
+          doneSending = doneSending + 1;
+          if (doneSending === selectedlocations.length) {
+            res("sent");
+          }
         });
-      } else {
-        await fetch(
-          `https://us-central1-firstproject-3ca46.cloudfunctions.net/Notify?title=${data.title}&body=${data.body}&topic=${data.location}`
-        );
-      }
+      });
     } catch (err) {
       console.log(err);
     }
+    setSelectedlocations(locations);
     setSend(false);
     props.setNotify(false);
   };
@@ -132,18 +137,23 @@ function NotifyModal(props) {
             <p>This field is required and should be an integer</p>
           )}
           <label>Location</label>
-          <select
-            className="select-css"
-            name="location"
-            ref={register({
-              required: true,
+          <div style={{ display: "flex", flexWrap: "wrap" }}>
+            {locations.map((el) => {
+              return (
+                <div style={{ margin: "5px" }}>
+                  <h6>{el}</h6>
+                  <input
+                    type="checkbox"
+                    style={{ marginTop: "10px" }}
+                    onClick={(e) => {
+                      selectItem(e.target.checked, el);
+                    }}
+                    checked={selectedlocations.includes(el)}
+                  />
+                </div>
+              );
             })}
-          >
-            <option value="all">All</option>
-            {locations.map((x) => {
-              return <option value={x}>{x}</option>;
-            })}
-          </select>
+          </div>
           <Button variant="info" type="submit">
             <Spinner
               as="span"
