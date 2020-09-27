@@ -144,7 +144,8 @@ export default function UserTable(props) {
               //
               setdownloading(true);
               var res = await fetch(
-                "http://localhost:5001/firstproject-3ca46/us-central1/getUserCSV"
+                "https://us-central1-firstproject-3ca46.cloudfunctions.net/getUserCSV"
+                // "http://localhost:5001/firstproject-3ca46/us-central1/getUserCSV"
               );
               var resjson = await res.json();
               const url = window.URL.createObjectURL(new Blob([resjson.file]));
