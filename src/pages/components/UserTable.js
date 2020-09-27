@@ -24,6 +24,7 @@ export default function UserTable(props) {
   const [sortby, Setsortby] = useState("asc");
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [blocking, setBlocking] = useState(false);
+  const [downloading, setdownloading] = useState(false);
 
   useEffect(() => {
     getUsers();
@@ -130,6 +131,46 @@ export default function UserTable(props) {
             }}
           >
             Cancle
+          </Button>
+          <Button
+            variant={"light"}
+            style={{
+              marginLeft: "10px",
+              marginBottom: "10px",
+              marginTop: "10px",
+              width: "min-content",
+            }}
+            onClick={async () => {
+              //
+              setdownloading(true);
+              var res = await fetch(
+                "http://localhost:5001/firstproject-3ca46/us-central1/getUserCSV"
+              );
+              var resjson = await res.json();
+              const url = window.URL.createObjectURL(new Blob([resjson.file]));
+              const link = document.createElement("a");
+              link.href = url;
+              link.setAttribute("download", "Users_.csv");
+              document.body.appendChild(link);
+              setdownloading(false);
+              link.click();
+            }}
+            disabled={downloading}
+          >
+            <div style={{ display: "flex" }}>
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+                style={{
+                  display: downloading ? "block" : "none",
+                  marginRight: "5px",
+                }}
+              />
+              <h6>Download</h6>
+            </div>
           </Button>
         </Col>
         <Col>
