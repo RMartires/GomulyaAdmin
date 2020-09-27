@@ -1,5 +1,13 @@
-import React, { Component, useState } from "react";
-import { Navbar, Button, Modal, Spinner } from "react-bootstrap";
+import React, { Component, useState, useEffect } from "react";
+import {
+  Navbar,
+  Button,
+  Modal,
+  Spinner,
+  Container,
+  Row,
+  Col,
+} from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import UserTable from "./components/UserTable";
 import OrderTable from "./components/OrderTable";
@@ -99,6 +107,7 @@ function NotifyModal(props) {
       await new Promise((res, rej) => {
         selectedlocations.forEach(async (loc) => {
           await fetch(
+            // `http://localhost:5001/firstproject-3ca46/us-central1/Notify?title=${data.title}&body=${data.body}&topic=${loc}`
             `https://us-central1-firstproject-3ca46.cloudfunctions.net/Notify?title=${data.title}&body=${data.body}&topic=${loc}`
           );
           doneSending = doneSending + 1;
@@ -177,20 +186,67 @@ function NotifyModal(props) {
 
 function EmailModal(props) {
   const { register, handleSubmit, errors } = useForm();
-  const [send, setSend] = useState(false);
+  const [northsend, setNorthsend] = useState(false);
+  const [southsend, setSouthsend] = useState(false);
+  const locations = ["North", "South"];
+  const [selectedlocations, setSelectedlocations] = useState([]);
+  const [generate, setGenerate] = useState(false);
+  const [Gloading, setGLoading] = useState(false);
+  const [arr, setArr] = useState([false, false]);
+  const [NorthEmail, setNorthEmail] = useState("namit@palasha.in"); //"namit@palasha.in";
+  const [SouthEmail, setSouthEmail] = useState("sarthak.mkt@yahoo.com"); //"sarthak.mkt@yahoo.com";
 
-  const onSubmit = async (data) => {
-    setSend(true);
-    console.log(data);
+  const onGenerate = async () => {
     try {
-      await fetch(
-        `https://us-central1-firstproject-3ca46.cloudfunctions.net/createCSV?to=${data.to}`
+      setGLoading(true);
+      var res = await fetch(
+        // "http://localhost:5001/firstproject-3ca46/us-central1/createCSV"
+        "https://us-central1-firstproject-3ca46.cloudfunctions.net/createCSV "
       );
+      var resjson = await res.json();
+      setArr(resjson.files);
+      setGenerate(true);
+      setGLoading(false);
+    } catch (err) {
+      console.log(err);
+      setGLoading(false);
+    }
+  };
+
+  const selectItem = (con, value) => {
+    if (con) {
+      setSelectedlocations([...selectedlocations, value]);
+    } else {
+      setSelectedlocations(selectedlocations.filter((x) => x !== value));
+    }
+  };
+
+  const onSubmit = async (file, name, to) => {
+    try {
+      var formdata = new URLSearchParams();
+      formdata.append("file", file);
+      formdata.append("name", name);
+      formdata.append("to", to);
+      await fetch(
+        // "http://localhost:5001/firstproject-3ca46/us-central1/sendMail",
+        `https://us-central1-firstproject-3ca46.cloudfunctions.net/createCSV`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+          },
+          body: formdata,
+        }
+      );
+
+      if (name === "North_Goa.csv") {
+        setNorthsend(true);
+      } else {
+        setSouthsend(true);
+      }
     } catch (err) {
       console.log(err);
     }
-    setSend(false);
-    props.setEmail(false);
   };
 
   return (
@@ -198,40 +254,164 @@ function EmailModal(props) {
       show={props.email}
       onHide={() => {
         props.setEmail(false);
+        setGenerate(false);
       }}
       centered
     >
       <Modal.Header>Send Email</Modal.Header>
       <Modal.Body>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <label>To</label>
-          <input
-            name="to"
-            ref={register({
-              required: true,
-              pattern: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-            })}
-            type="email"
-          />
-          {errors.to && (
-            <p>This field is required and should be a valid email</p>
+        <Container style={{ textAlign: "center" }}>
+          {!generate ? (
+            <Row>
+              <Col>
+                {Gloading ? (
+                  <Spinner
+                    animation="border"
+                    style={{ marginRight: "auto", marginLeft: "auto" }}
+                  />
+                ) : (
+                  <Button variant="info" onClick={onGenerate.bind(this)}>
+                    Generate
+                  </Button>
+                )}
+              </Col>
+            </Row>
+          ) : (
+            <div>
+              <Row>
+                <Col>
+                  {selectedlocations.includes("North") && arr[0] ? (
+                    <Button
+                      style={
+                        !northsend
+                          ? {
+                              backgroundColor: "#bf1650",
+                              borderColor: "#bf1650",
+                            }
+                          : {
+                              backgroundColor: "#1bd939",
+                              borderColor: "#1bd939",
+                            }
+                      }
+                      onClick={onSubmit.bind(
+                        this,
+                        arr[0],
+                        "North_Goa.csv",
+                        NorthEmail
+                      )}
+                    >
+                      {northsend ? "Sent" : "Send North_Goa.csv"}
+                    </Button>
+                  ) : (
+                    <div>
+                      <input
+                        type="text"
+                        defaultValue={NorthEmail}
+                        onKeyUp={(e) => {
+                          setNorthEmail(e.target.value);
+                        }}
+                      />
+                      <div style={{ display: "flex" }}>
+                        <Button
+                          variant="info"
+                          disabled={!arr[0]}
+                          onClick={() => {
+                            const url = window.URL.createObjectURL(
+                              new Blob([arr[0]])
+                            );
+                            const link = document.createElement("a");
+                            link.href = url;
+                            link.setAttribute("download", "North_Goa.csv");
+                            document.body.appendChild(link);
+                            link.click();
+                          }}
+                        >
+                          Pre-View North
+                        </Button>
+                        <div style={{ margin: "5px", margin: "auto" }}>
+                          <h6>approve</h6>
+                          <input
+                            type="checkbox"
+                            style={{ marginTop: "10px" }}
+                            onClick={(e) => {
+                              selectItem(e.target.checked, "North");
+                            }}
+                            checked={selectedlocations.includes("North")}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </Col>
+                <Col>
+                  {selectedlocations.includes("South") && arr[1] ? (
+                    <Button
+                      style={
+                        !southsend
+                          ? {
+                              backgroundColor: "#bf1650",
+                              borderColor: "#bf1650",
+                            }
+                          : {
+                              backgroundColor: "#1bd939",
+                              borderColor: "#1bd939",
+                            }
+                      }
+                      varient={southsend ? "success" : ""}
+                      onClick={onSubmit.bind(
+                        this,
+                        arr[1],
+                        "South_Goa.csv",
+                        SouthEmail
+                      )}
+                    >
+                      {southsend ? "Sent" : "Send South_Goa.csv"}
+                    </Button>
+                  ) : (
+                    <div>
+                      <input
+                        type="text"
+                        defaultValue={SouthEmail}
+                        onKeyUp={(e) => {
+                          setSouthEmail(e.target.value);
+                        }}
+                      />
+                      <div style={{ display: "flex" }}>
+                        <Button
+                          variant="info"
+                          disabled={!arr[1]}
+                          onClick={() => {
+                            const url = window.URL.createObjectURL(
+                              new Blob([arr[1]])
+                            );
+                            const link = document.createElement("a");
+                            link.href = url;
+                            link.setAttribute("download", "South_Goa.csv");
+                            document.body.appendChild(link);
+                            link.click();
+                          }}
+                        >
+                          Pre-View South
+                        </Button>
+                        <div style={{ margin: "5px", margin: "auto" }}>
+                          <h6>approve</h6>
+                          <input
+                            type="checkbox"
+                            style={{ marginTop: "10px" }}
+                            onClick={(e) => {
+                              selectItem(e.target.checked, "South");
+                            }}
+                            checked={selectedlocations.includes("South")}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </Col>
+              </Row>
+            </div>
           )}
-          <Button variant="info" type="submit">
-            <Spinner
-              as="span"
-              animation="border"
-              size="sm"
-              role="status"
-              aria-hidden="true"
-              style={
-                send
-                  ? { dislay: "block", marginRight: "10px" }
-                  : { display: "none" }
-              }
-            />
-            Send
-          </Button>
-        </form>
+        </Container>
       </Modal.Body>
     </Modal>
   );

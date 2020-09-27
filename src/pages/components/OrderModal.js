@@ -78,12 +78,14 @@ export default function OrderModel(props) {
   };
 
   const onSubmit = async (data) => {
+    console.log(data);
     var send = props.order;
     send.frequency = data.frequency;
     send.orderStatus = data.orderStatus === "true" ? true : false;
     send.paid = data.paid;
     send.price = data.price;
     send.quantity = data.quantity;
+    send.paymentMethod = data.paymentMethod;
     send.startDate = data.startDate;
     send.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
     await firebase
@@ -167,6 +169,16 @@ export default function OrderModel(props) {
                 })}
               />
               {errors.frequency && <p>This field is required</p>}
+              <label>Payment Method</label>
+              <input
+                name="paymentMethod"
+                defaultValue={
+                  props.order.paymentMethod ? props.order.paymentMethod : "none"
+                }
+                ref={register({
+                  required: true,
+                })}
+              />
               <label>startdate</label>
               <input
                 name="startDate"
@@ -257,6 +269,11 @@ export default function OrderModel(props) {
           <h5>price: {props.order.price}</h5>
           <h5>quantity: {props.order.quantity}</h5>
           <h5>frequency: {props.order.frequency}</h5>
+          <h5>
+            Payment Method:{" "}
+            {props.order.paymentMethod ? props.order.paymentMethod : "none"}
+          </h5>
+          <h5>Created At: {props.order.createdAt}</h5>
           <h5>startdate: {props.order.startDate}</h5>
           <div style={{ marginLeft: "auto", width: "min-content" }}>
             <Button

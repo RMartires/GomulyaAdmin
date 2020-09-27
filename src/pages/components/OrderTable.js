@@ -224,6 +224,8 @@ export default function UserTable() {
                   <th>Order status</th>
                   <th className="tablecontent">Frequency</th>
                   <th className="tablecontent">Phone Number</th>
+                  <th className="tablecontent">Payment Method</th>
+                  <th className="tablecontent">Created At</th>
                 </tr>
               </thead>
               <tbody>
@@ -269,6 +271,10 @@ export default function UserTable() {
                         </td>
                         <td className="tablecontent">{order.frequency}</td>
                         <td className="tablecontent">{order.phoneNumber}</td>
+                        <td className="tablecontent">
+                          {order.paymentMethod ? order.paymentMethod : "none"}
+                        </td>
+                        <td className="tablecontent">{order.createdAt}</td>
                       </tr>
                     );
                   })
