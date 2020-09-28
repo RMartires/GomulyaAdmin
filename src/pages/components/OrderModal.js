@@ -238,9 +238,11 @@ export default function OrderModel(props) {
               showNavigation={false}
               value={new Date()}
               onChange={(value) => chnageCalendar(value)}
+              activeStartDate={moment(props.order.startDate).date(1)._d}
               minDate={moment().add(2, "days")._d}
               maxDate={moment().add(1, "month").date(1).subtract(1, "day")._d}
             />
+            {console.log(moment(props.order.startDate).date(1))}
             <Button
               variant="success"
               onClick={async () => {
@@ -273,7 +275,10 @@ export default function OrderModel(props) {
             Payment Method:{" "}
             {props.order.paymentMethod ? props.order.paymentMethod : "none"}
           </h5>
-          <h5>Created At: {props.order.createdAt}</h5>
+          <h5>
+            Created At:{" "}
+            {props.order.createdAt ? `${props.order.createdAt.toDate()}` : "-"}
+          </h5>
           <h5>startdate: {props.order.startDate}</h5>
           <div style={{ marginLeft: "auto", width: "min-content" }}>
             <Button
@@ -287,7 +292,7 @@ export default function OrderModel(props) {
           </div>
           <Calendar
             showNavigation={false}
-            value={new Date()}
+            activeStartDate={moment(props.order.startDate).date(1)._d}
             minDate={moment().add(2, "days")._d}
             maxDate={moment().add(1, "month").date(1).subtract(1, "day")._d}
           />

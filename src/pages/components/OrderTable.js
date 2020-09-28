@@ -88,6 +88,7 @@ export default function UserTable() {
         });
         setOrders(temporders);
         setLoading(false);
+        console.log(temporders);
       })
       .catch((err) => {
         console.log(err);
@@ -274,7 +275,11 @@ export default function UserTable() {
                         <td className="tablecontent">
                           {order.paymentMethod ? order.paymentMethod : "none"}
                         </td>
-                        <td className="tablecontent">{order.createdAt}</td>
+                        <td className="tablecontent">
+                          {order.createdAt
+                            ? `${order.createdAt.toDate()}`
+                            : "-"}
+                        </td>
                       </tr>
                     );
                   })
