@@ -229,7 +229,7 @@ function EmailModal(props) {
       formdata.append("to", to);
       await fetch(
         // "http://localhost:5001/firstproject-3ca46/us-central1/sendMail",
-        `https://us-central1-firstproject-3ca46.cloudfunctions.net/createCSV`,
+        `https://us-central1-firstproject-3ca46.cloudfunctions.net/sendMail `,
         {
           method: "POST",
           headers: {

@@ -71,8 +71,8 @@ export default function UserTable(props) {
       formdata.append("collection", "users");
 
       var res = await fetch(
-        "http://localhost:5001/firstproject-3ca46/us-central1/deleteCollections",
-        // "https://us-central1-firstproject-3ca46.cloudfunctions.net/deleteCollections",
+        // "http://localhost:5001/firstproject-3ca46/us-central1/deleteCollections",
+        "https://us-central1-firstproject-3ca46.cloudfunctions.net/deleteCollections",
         {
           method: "POST",
           headers: {
@@ -130,7 +130,7 @@ export default function UserTable(props) {
               setSelectedUsers([]);
             }}
           >
-            Cancle
+            Cancel
           </Button>
           <Button
             variant={"light"}
@@ -177,7 +177,7 @@ export default function UserTable(props) {
         <Col>
           <DropdownButton
             id="dropdown-sort"
-            title={`sort by: ${sortby}`}
+            title={`sort by modified: ${sortby}`}
             variant="light"
             style={{
               marginLeft: "auto",
