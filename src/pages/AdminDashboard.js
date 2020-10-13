@@ -8,13 +8,16 @@ import {
   Row,
   Col,
 } from "react-bootstrap";
+import { useParams, Redirect } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import UserTable from "./components/UserTable";
 import OrderTable from "./components/OrderTable";
+import PendingTable from "./components/PendingTable";
+import DailyChartTable from "./components/DailyChartTable";
+import PaymentTable from "./components/PaymentTable";
 
-export default class AdminDashboard extends Component {
+class AdminDashboard extends Component {
   state = {
-    UserTable: true,
     notify: false,
     email: false,
     select: false,
@@ -25,6 +28,26 @@ export default class AdminDashboard extends Component {
   };
   setEmail = (condition) => {
     this.setState({ email: condition });
+  };
+
+  returnTable = () => {
+    switch (this.props.page) {
+      case "user":
+        return <UserTable />;
+        break;
+      case "pending":
+        return <PendingTable />;
+        break;
+      case "order":
+        return <OrderTable />;
+        break;
+      case "dailychart":
+        return <DailyChartTable />;
+        break;
+      case "payment":
+        return <PaymentTable />;
+        break;
+    }
   };
 
   render() {
@@ -40,21 +63,47 @@ export default class AdminDashboard extends Component {
         />
         <Navbar bg="light">
           <Button
-            variant="light"
+            variant={this.props.page === "user" ? "info" : "light"}
             onClick={() => {
-              this.setState({ UserTable: true });
+              this.props.history.push("/user");
             }}
           >
             Users
           </Button>
           <Button
-            variant="light"
+            variant={this.props.page === "pending" ? "info" : "light"}
+            onClick={() => {
+              this.props.history.push("/pending");
+            }}
+          >
+            Pending
+          </Button>
+          <Button
+            variant={this.props.page === "order" ? "info" : "light"}
             style={{ marginLeft: "10px" }}
             onClick={() => {
-              this.setState({ UserTable: false });
+              this.props.history.push("/order");
             }}
           >
             Orders
+          </Button>
+          <Button
+            variant={this.props.page === "dailychart" ? "info" : "light"}
+            style={{ marginLeft: "10px" }}
+            onClick={() => {
+              this.props.history.push("/dailychart");
+            }}
+          >
+            Daily Chart
+          </Button>
+          <Button
+            variant={this.props.page === "payment" ? "info" : "light"}
+            style={{ marginLeft: "10px" }}
+            onClick={() => {
+              this.props.history.push("/payment");
+            }}
+          >
+            Payment
           </Button>
           <Button
             style={{ marginLeft: "auto" }}
@@ -69,7 +118,8 @@ export default class AdminDashboard extends Component {
             Notify
           </Button>
         </Navbar>
-        {this.state.UserTable ? <UserTable /> : <OrderTable />}
+        {this.returnTable()}
+        {/* {this.state.UserTable ? <UserTable /> : <OrderTable />} */}
       </div>
     );
   }
@@ -415,4 +465,10 @@ function EmailModal(props) {
       </Modal.Body>
     </Modal>
   );
+}
+
+export default function FAdminDashboard(props) {
+  var { page } = useParams();
+
+  return <AdminDashboard page={page} history={props.history} />;
 }
