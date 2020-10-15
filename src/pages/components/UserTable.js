@@ -96,7 +96,7 @@ export default function UserTable(props) {
       <Row>
         <Col style={{ display: "flex" }}>
           <Button
-            variant={selected ? "danger" : "light"}
+            variant={selected ? "danger" : "dark"}
             disabled={
               selected ? (selectedUsers.length < 1 ? true : false) : false
             }
@@ -133,7 +133,7 @@ export default function UserTable(props) {
             Cancel
           </Button>
           <Button
-            variant={"light"}
+            variant={"dark"}
             style={{
               marginLeft: "10px",
               marginBottom: "10px",
@@ -168,6 +168,7 @@ export default function UserTable(props) {
                 style={{
                   display: downloading ? "block" : "none",
                   marginRight: "5px",
+                  color: "white",
                 }}
               />
               <h6>Download</h6>
@@ -178,7 +179,7 @@ export default function UserTable(props) {
           <DropdownButton
             id="dropdown-sort"
             title={`sort by modified: ${sortby}`}
-            variant="light"
+            variant="dark"
             style={{
               marginLeft: "auto",
               marginBottom: "10px",

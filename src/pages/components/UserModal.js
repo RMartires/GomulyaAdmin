@@ -40,6 +40,7 @@ export default function UserModel(props) {
         setEdit(false);
       }}
       centered
+      className="dark-modal"
     >
       <Modal.Header closeButton>
         <h4>{props.user.name}</h4>

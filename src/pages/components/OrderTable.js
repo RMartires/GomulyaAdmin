@@ -118,7 +118,7 @@ export default function UserTable() {
       <Row>
         <Col style={{ display: "flex" }}>
           <Button
-            variant={selected ? "danger" : "light"}
+            variant={selected ? "danger" : "dark"}
             disabled={
               selected ? (selectedOrders.length < 1 ? true : false) : false
             }
@@ -159,7 +159,7 @@ export default function UserTable() {
           <DropdownButton
             id="dropdown-sort"
             title={`sort by modified: ${sortby}`}
-            variant="light"
+            variant="dark"
             style={{
               marginLeft: "auto",
               marginBottom: "10px",

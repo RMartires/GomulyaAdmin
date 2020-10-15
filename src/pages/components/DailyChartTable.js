@@ -152,7 +152,7 @@ export default function UserTable() {
             Cancel
           </Button> */}
           <Button
-            variant={"light"}
+            variant={"dark"}
             style={{
               marginLeft: "10px",
               marginBottom: "10px",
@@ -198,7 +198,7 @@ export default function UserTable() {
         </Col>
         <Col style={{ textAlign: "end" }}>
           <Button
-            variant={"light"}
+            variant={"dark"}
             style={{
               marginLeft: "10px",
               marginBottom: "10px",
@@ -223,7 +223,7 @@ export default function UserTable() {
             }}
           ></input>
           <Button
-            variant={"light"}
+            variant={"dark"}
             disabled={!file}
             style={{
               marginLeft: "10px",
@@ -246,7 +246,7 @@ export default function UserTable() {
               {northCity.map((cty, index) => {
                 return (
                   <Button
-                    variant={city === cty ? "dark" : "light"}
+                    variant={city === cty ? "secondary" : "dark"}
                     style={{ margin: "5px" }}
                     onClick={() => {
                       setCity(cty);
@@ -262,7 +262,7 @@ export default function UserTable() {
               {southCity.map((cty, index) => {
                 return (
                   <Button
-                    variant={city === cty ? "dark" : "light"}
+                    variant={city === cty ? "secondary" : "dark"}
                     style={{ margin: "5px" }}
                     onClick={() => {
                       setCity(cty);
@@ -279,7 +279,7 @@ export default function UserTable() {
           <DropdownButton
             id="dropdown-sort"
             title={`district: ${district}`}
-            variant="light"
+            variant="dark"
             style={{
               marginLeft: "auto",
               marginBottom: "10px",

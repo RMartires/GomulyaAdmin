@@ -10,7 +10,7 @@ import {
   DropdownButton,
   Dropdown,
 } from "react-bootstrap";
-import moment from 'moment';
+import moment from "moment";
 import "./Users.css";
 import BlockUi from "react-block-ui";
 import "react-block-ui/style.css";
@@ -100,7 +100,7 @@ export default function UserTable() {
       <Row>
         <Col style={{ display: "flex" }}>
           <Button
-            variant={selected ? "danger" : "light"}
+            variant={selected ? "danger" : "dark"}
             disabled={
               selected ? (selectedOrders.length < 1 ? true : false) : false
             }
@@ -141,7 +141,7 @@ export default function UserTable() {
           <DropdownButton
             id="dropdown-sort"
             title={`sort by modified: ${sortby}`}
-            variant="light"
+            variant="dark"
             style={{
               marginLeft: "auto",
               marginBottom: "10px",
@@ -182,14 +182,34 @@ export default function UserTable() {
                   {selected ? <th>#</th> : ""}
                   <th>No.</th>
                   <th>Name</th>
-                  <th>Payment<br/>status</th>
+                  <th>
+                    Payment
+                    <br />
+                    status
+                  </th>
                   <th className="tablecontent">Total</th>
-                  <th className="tablecontent">Paid<br/>Amount</th>
-                  <th className="tablecontent">Remaining<br/>Amount</th>
-                  <th className="tablecontent">Payment<br/>Method</th>
+                  <th className="tablecontent">
+                    Paid
+                    <br />
+                    Amount
+                  </th>
+                  <th className="tablecontent">
+                    Remaining
+                    <br />
+                    Amount
+                  </th>
+                  <th className="tablecontent">
+                    Payment
+                    <br />
+                    Method
+                  </th>
                   <th className="tablecontent">Qty.</th>
                   <th className="tablecontent">Frequency</th>
-                  <th className="tablecontent">Contact<br/>No.</th>
+                  <th className="tablecontent">
+                    Contact
+                    <br />
+                    No.
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -223,7 +243,9 @@ export default function UserTable() {
                         <td className="tablecontent">{order?.paymentStatus}</td>
                         <td className="tablecontent">{order?.price}</td>
                         <td className="tablecontent">{order?.paidAmount}</td>
-                        <td className="tablecontent">{order?.remainingAmount}</td>
+                        <td className="tablecontent">
+                          {order?.remainingAmount}
+                        </td>
                         <td className="tablecontent">{order?.paymentMethod}</td>
                         <td className="tablecontent">{order?.quantity}</td>
                         <td className="tablecontent">{order.frequency}</td>

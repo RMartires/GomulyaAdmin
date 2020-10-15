@@ -61,9 +61,9 @@ class AdminDashboard extends Component {
           setEmail={this.setEmail.bind(this)}
           email={this.state.email}
         />
-        <Navbar bg="light">
+        <Navbar style={{ backgroundColor: "#0e101c !important" }}>
           <Button
-            variant={this.props.page === "user" ? "info" : "light"}
+            variant={this.props.page === "user" ? "info" : "dark"}
             onClick={() => {
               this.props.history.push("/user");
             }}
@@ -71,7 +71,8 @@ class AdminDashboard extends Component {
             Users
           </Button>
           <Button
-            variant={this.props.page === "pending" ? "info" : "light"}
+            variant={this.props.page === "pending" ? "info" : "dark"}
+            style={{ marginLeft: "10px" }}
             onClick={() => {
               this.props.history.push("/pending");
             }}
@@ -79,7 +80,7 @@ class AdminDashboard extends Component {
             Pending
           </Button>
           <Button
-            variant={this.props.page === "order" ? "info" : "light"}
+            variant={this.props.page === "order" ? "info" : "dark"}
             style={{ marginLeft: "10px" }}
             onClick={() => {
               this.props.history.push("/order");
@@ -88,7 +89,7 @@ class AdminDashboard extends Component {
             Orders
           </Button>
           <Button
-            variant={this.props.page === "dailychart" ? "info" : "light"}
+            variant={this.props.page === "dailychart" ? "info" : "dark"}
             style={{ marginLeft: "10px" }}
             onClick={() => {
               this.props.history.push("/dailychart");
@@ -97,7 +98,7 @@ class AdminDashboard extends Component {
             Daily Chart
           </Button>
           <Button
-            variant={this.props.page === "payment" ? "info" : "light"}
+            variant={this.props.page === "payment" ? "info" : "dark"}
             style={{ marginLeft: "10px" }}
             onClick={() => {
               this.props.history.push("/payment");
