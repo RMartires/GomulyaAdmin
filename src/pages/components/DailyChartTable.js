@@ -196,7 +196,7 @@ export default function UserTable() {
             </div>
           </Button>
         </Col>
-        <Col>
+        <Col style={{ textAlign: "end" }}>
           <Button
             variant={"light"}
             style={{

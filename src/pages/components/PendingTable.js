@@ -10,7 +10,7 @@ import {
   DropdownButton,
   Dropdown,
 } from "react-bootstrap";
-import moment from 'moment';
+import moment from "moment";
 import "./Users.css";
 import BlockUi from "react-block-ui";
 import "react-block-ui/style.css";
@@ -223,7 +223,11 @@ export default function UserTable() {
                   {selected ? <th>#</th> : ""}
                   <th>No.</th>
                   <th>Name</th>
-                  <th>Order<br/>status</th>
+                  <th>
+                    Order
+                    <br />
+                    status
+                  </th>
                   <th className="tablecontent">Qty.</th>
                   <th className="tablecontent">Frequency</th>
                   <th className="tablecontent">StartDate</th>
@@ -269,9 +273,7 @@ export default function UserTable() {
                             color: order.orderStatus ? "green" : "red",
                           }}
                         >
-                          {order.orderStatus !== undefined
-                            ? order.orderStatus.toString()
-                            : ""}
+                          {order?.orderStatus ? "Confirmed" : "Pending"}
                         </td>
                         <td className="tablecontent">{order.quantity}</td>
                         <td className="tablecontent">{order.frequency}</td>
@@ -280,7 +282,9 @@ export default function UserTable() {
                         <td className="tablecontent">{order.address}</td>
                         <td className="tablecontent">
                           {order.createdAt
-                            ? `${moment(order.createdAt.toDate()).format("DD MM YYYY, hh:mm:ss")}`
+                            ? `${moment(order.createdAt.toDate()).format(
+                                "DD MM YYYY, hh:mm:ss"
+                              )}`
                             : "-"}
                         </td>
                       </tr>

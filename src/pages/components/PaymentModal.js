@@ -25,14 +25,14 @@ export default function PaymentModal(props) {
   const onSubmit = async (data) => {
     console.log(data);
     var send = props.order;
-    send.frequency = data.frequency;
+    // send.frequency = data.frequency;
     send.paymentMethod = data?.paymentMethod;
-    send.quantity = data.quantity;
+    // send.quantity = data.quantity;
     send.price = data.price;
     send.phoneNumber = data.phoneNumber;
     send.paidAmount = data?.paidAmount;
     send.remainingAmount = data?.price - data?.paidAmount;
-    send.paymentStatus = send?.remainingAmount===0 ? "done":"incomplete";
+    send.paymentStatus = send?.remainingAmount === 0 ? "done" : "incomplete";
     send.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
     await firebase
       .firestore()
@@ -58,9 +58,9 @@ export default function PaymentModal(props) {
         <h4>{props.order.name}</h4>
       </Modal.Header>
       {edit ? (
-          <Modal.Body>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              {/* <label>Payment status</label>
+        <Modal.Body>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {/* <label>Payment status</label>
               <select
                 className="select-css"
                 name="paymentStatus"
@@ -72,38 +72,35 @@ export default function PaymentModal(props) {
                 <option value={true}>paid</option>
                 <option value={false}>pending</option>
               </select> */}
-              {errors.orderStatus && <p>This field is required</p>}
-              <label>Total</label>
-              <input
-                name="price"
-                defaultValue={props.order?.price}
-                ref={register({
-                  required: true,
-                })}
-              >
-              </input>
-              {errors.price && <p>This field is required</p>}
-              <label>Paid Amount</label>
-              <input
-                name="paidAmount"
-                defaultValue={props.order?.paidAmount}
-                ref={register({
-                  required: true,
-                })}
-              >
-              </input>
-              {errors.paidAmount && <p>This field is required</p>}
-              <label>Payment Method</label>
-              <input
-                name="paymentMethod"
-                defaultValue={props.order?.paymentMethod}
-                ref={register({
-                  required: true,
-                })}
-              >
-              </input>
-              {errors.paymentMethod && <p>This field is required</p>}
-              <label>Quantity</label>
+            {errors.orderStatus && <p>This field is required</p>}
+            <label>Total</label>
+            <input
+              name="price"
+              defaultValue={props.order?.price}
+              ref={register({
+                required: true,
+              })}
+            ></input>
+            {errors.price && <p>This field is required</p>}
+            <label>Paid Amount</label>
+            <input
+              name="paidAmount"
+              defaultValue={props.order?.paidAmount}
+              ref={register({
+                required: true,
+              })}
+            ></input>
+            {errors.paidAmount && <p>This field is required</p>}
+            <label>Payment Method</label>
+            <input
+              name="paymentMethod"
+              defaultValue={props.order?.paymentMethod}
+              ref={register({
+                required: true,
+              })}
+            ></input>
+            {errors.paymentMethod && <p>This field is required</p>}
+            {/* <label>Quantity</label>
               <input
                 name="quantity"
                 defaultValue={props.order?.quantity}
@@ -120,30 +117,31 @@ export default function PaymentModal(props) {
                   required: true,
                 })}
               />
-              {errors.frequency && <p>This field is required</p>}
-              <label>Contact No.</label>
-              <input
-                name="phoneNumber"
-                defaultValue={props.order.phoneNumber}
-                ref={register({
-                  required: true,
-                })}
-              />
-              {errors.phoneNumber && <p>This field is required</p>}
-              <Button type="submit">Update</Button>
-            </form>
-            <Button
-              variant="danger"
-              onClick={deleteOrder.bind(this)}
-              style={{ marginTop: "10px" }}
-            >
-              Delete
-            </Button>
-          </Modal.Body>
-        ) 
-      : (
+              {errors.frequency && <p>This field is required</p>} */}
+            <label>Contact No.</label>
+            <input
+              name="phoneNumber"
+              defaultValue={props.order.phoneNumber}
+              ref={register({
+                required: true,
+              })}
+            />
+            {errors.phoneNumber && <p>This field is required</p>}
+            <Button type="submit">Update</Button>
+          </form>
+          <Button
+            variant="danger"
+            onClick={deleteOrder.bind(this)}
+            style={{ marginTop: "10px" }}
+          >
+            Delete
+          </Button>
+        </Modal.Body>
+      ) : (
         <Modal.Body>
-          <h5>Payment status: {props.order?.paymentStatus?"paid":"pending"}</h5>
+          <h5>
+            Payment status: {props.order?.paymentStatus ? "paid" : "pending"}
+          </h5>
           <h5>Total: {props.order.price}</h5>
           <h5>Paid Amount: {props.order?.paidAmount}</h5>
           <h5>Remaining Amount: {props.order?.remainingAmount}</h5>

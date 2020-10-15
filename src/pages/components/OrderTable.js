@@ -14,6 +14,7 @@ import "./Users.css";
 import BlockUi from "react-block-ui";
 import "react-block-ui/style.css";
 import OrderModal from "./OrderModal";
+import moment from "moment";
 const firebase = require("firebase");
 
 export default function UserTable() {
@@ -222,10 +223,15 @@ export default function UserTable() {
                   {selected ? <th>#</th> : ""}
                   <th>No.</th>
                   <th>Name</th>
-                  <th>Order status</th>
+                  <th>Qty.</th>
                   <th className="tablecontent">Frequency</th>
+                  <th className="tablecontent">
+                    Start
+                    <br />
+                    Date
+                  </th>
                   <th className="tablecontent">Phone Number</th>
-                  <th className="tablecontent">Payment Method</th>
+                  <th className="tablecontent">Address</th>
                   <th className="tablecontent">Created At</th>
                 </tr>
               </thead>
@@ -257,27 +263,16 @@ export default function UserTable() {
                         )}
                         <td>{index + 1}</td>
                         <td>{order.name}</td>
-                        <td
-                          onClick={() => {
-                            setConfirm(true);
-                            setShowpaid(true);
-                          }}
-                          style={{
-                            color: order.orderStatus ? "green" : "red",
-                          }}
-                        >
-                          {order.orderStatus !== undefined
-                            ? order.orderStatus.toString()
-                            : ""}
-                        </td>
+                        <td className="tablecontent">{order.quantity}</td>
                         <td className="tablecontent">{order.frequency}</td>
+                        <td className="tablecontent">{order.startDate}</td>
                         <td className="tablecontent">{order.phoneNumber}</td>
-                        <td className="tablecontent">
-                          {order.paymentMethod ? order.paymentMethod : "none"}
-                        </td>
+                        <td className="tablecontent">{order.address}</td>
                         <td className="tablecontent">
                           {order.createdAt
-                            ? `${order.createdAt.toDate()}`
+                            ? `${moment(order.createdAt.toDate()).format(
+                                "DD MM YYYY, hh:mm:ss"
+                              )}`
                             : "-"}
                         </td>
                       </tr>
