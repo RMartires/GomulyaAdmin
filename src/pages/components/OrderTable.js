@@ -167,7 +167,7 @@ export default function UserTable() {
               //
               setdownloading(true);
               var res = await fetch(
-                "http://localhost:5001/firstproject-3ca46/us-central1/createOrderCSV"
+                "https://us-central1-firstproject-3ca46.cloudfunctions.net/createOrderCSV"
                 // "http://localhost:5001/firstproject-3ca46/us-central1/getUserCSV"
               );
               var resjson = await res.json();
