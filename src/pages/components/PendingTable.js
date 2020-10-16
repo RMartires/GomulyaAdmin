@@ -30,6 +30,8 @@ export default function UserTable() {
   const [selectedOrders, setSelectedOrders] = useState([]);
   const [blocking, setBlocking] = useState(false);
 
+  const [loadingtog, setLoadingtog] = useState(false);
+
   useEffect(() => {
     getOrders();
   }, [sortby]);
@@ -97,10 +99,17 @@ export default function UserTable() {
   }
 
   async function toggelOrderStatus(order) {
+    setLoadingtog(true);
     if (order.orderStatus) {
       order.orderStatus = false;
+      var res = await fetch(
+        `https://us-central1-firstproject-3ca46.cloudfunctions.net/subscribeToTopic?topic=${order?.city}&regToken=${order?.regToken}&type=unsubscribe`
+      );
     } else {
       order.orderStatus = true;
+      var res = await fetch(
+        `https://us-central1-firstproject-3ca46.cloudfunctions.net/subscribeToTopic?topic=${order?.city}&regToken=${order?.regToken}&type=subscribe`
+      );
     }
     await firebase
       .firestore()
@@ -111,6 +120,7 @@ export default function UserTable() {
     setShowpaid(false);
     setShow(false);
     setConfirm(false);
+    setLoadingtog(false);
   }
 
   return (
@@ -199,6 +209,7 @@ export default function UserTable() {
         <Modal.Body>
           Are you sure you want to update the Order status of{" "}
           {currentorder ? currentorder.name : ""}
+          {loadingtog ? <Spinner animation="border" variant="light" /> : ""}
         </Modal.Body>
         <Modal.Footer>
           <Button
@@ -240,6 +251,7 @@ export default function UserTable() {
                 {loading ? (
                   <Spinner
                     animation="border"
+                    variant="light"
                     style={{ marginRight: "auto", marginLeft: "auto" }}
                   />
                 ) : (
@@ -265,12 +277,14 @@ export default function UserTable() {
                         <td>{index + 1}</td>
                         <td>{order.name}</td>
                         <td
+                          className={
+                            order.orderStatus
+                              ? "orderStatusConfirmed"
+                              : "orderStatusPending"
+                          }
                           onClick={() => {
                             setConfirm(true);
                             setShowpaid(true);
-                          }}
-                          style={{
-                            color: order.orderStatus ? "green" : "red",
                           }}
                         >
                           {order?.orderStatus ? "Confirmed" : "Pending"}

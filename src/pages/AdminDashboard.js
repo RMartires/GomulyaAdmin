@@ -56,11 +56,12 @@ class AdminDashboard extends Component {
         <NotifyModal
           setNotify={this.setNotify.bind(this)}
           notify={this.state.notify}
+          type={this.props.page}
         />
-        <EmailModal
+        {/* <EmailModal
           setEmail={this.setEmail.bind(this)}
           email={this.state.email}
-        />
+        /> */}
         <Navbar style={{ backgroundColor: "#0e101c !important" }}>
           <Button
             variant={this.props.page === "user" ? "info" : "dark"}
@@ -106,14 +107,25 @@ class AdminDashboard extends Component {
           >
             Payment
           </Button>
-          <Button
+          {/* <Button
             style={{ marginLeft: "auto" }}
             onClick={this.setEmail.bind(this, true)}
           >
             Email
-          </Button>
+          </Button> */}
+          <div
+            style={{
+              marginLeft: "auto",
+            }}
+          ></div>
           <Button
-            style={{ marginLeft: "10px" }}
+            style={{
+              marginLeft: "10px",
+              display:
+                (this.props.page === "order") | (this.props.page === "payment")
+                  ? "block"
+                  : "none",
+            }}
             onClick={this.setNotify.bind(this, true)}
           >
             Notify
@@ -149,6 +161,7 @@ function NotifyModal(props) {
     "vasco",
   ];
   const [selectedlocations, setSelectedlocations] = useState(locations);
+  const type = props.type;
 
   const selectItem = (con, value) => {
     if (con) {
@@ -163,19 +176,26 @@ function NotifyModal(props) {
     setSend(true);
     console.log(data);
     try {
-      var doneSending = 0;
-      await new Promise((res, rej) => {
-        selectedlocations.forEach(async (loc) => {
-          await fetch(
-            // `http://localhost:5001/firstproject-3ca46/us-central1/Notify?title=${data.title}&body=${data.body}&topic=${loc}`
-            `https://us-central1-firstproject-3ca46.cloudfunctions.net/Notify?title=${data.title}&body=${data.body}&topic=${loc}`
-          );
-          doneSending = doneSending + 1;
-          if (doneSending === selectedlocations.length) {
-            res("sent");
-          }
+      if ((type = "order")) {
+        var doneSending = 0;
+        await new Promise((res, rej) => {
+          selectedlocations.forEach(async (loc) => {
+            await fetch(
+              // `http://localhost:5001/firstproject-3ca46/us-central1/Notify?title=${data.title}&body=${data.body}&topic=${loc}`
+              `https://us-central1-firstproject-3ca46.cloudfunctions.net/Notify?title=${data.title}&body=${data.body}&topic=${loc}`
+            );
+            doneSending = doneSending + 1;
+            if (doneSending === selectedlocations.length) {
+              res("sent");
+            }
+          });
         });
-      });
+      } else if ((type = "payment")) {
+        await fetch(
+          // `http://localhost:5001/firstproject-3ca46/us-central1/Notify?title=${data.title}&body=${data.body}&topic=${loc}`
+          `https://us-central1-firstproject-3ca46.cloudfunctions.net/Notify?title=${data.title}&body=${data.body}&topic=PaymentDue`
+        );
+      }
     } catch (err) {
       console.log(err);
     }
@@ -205,24 +225,32 @@ function NotifyModal(props) {
           {errors.body && (
             <p>This field is required and should be an integer</p>
           )}
-          <label>Location</label>
-          <div style={{ display: "flex", flexWrap: "wrap" }}>
-            {locations.map((el) => {
-              return (
-                <div style={{ margin: "5px" }}>
-                  <h6>{el}</h6>
-                  <input
-                    type="checkbox"
-                    style={{ marginTop: "10px" }}
-                    onClick={(e) => {
-                      selectItem(e.target.checked, el);
-                    }}
-                    checked={selectedlocations.includes(el)}
-                  />
-                </div>
-              );
-            })}
-          </div>
+          <div />
+          {type === "order" ? (
+            <div>
+              <label>Location</label>
+              <div style={{ display: "flex", flexWrap: "wrap" }}>
+                {locations.map((el) => {
+                  return (
+                    <div style={{ margin: "5px" }}>
+                      <h6>{el}</h6>
+                      <input
+                        type="checkbox"
+                        style={{ marginTop: "10px" }}
+                        onClick={(e) => {
+                          selectItem(e.target.checked, el);
+                        }}
+                        checked={selectedlocations.includes(el)}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
+
           <Button variant="info" type="submit">
             <Spinner
               as="span"

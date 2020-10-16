@@ -34,6 +34,29 @@ export default function PaymentModal(props) {
     send.remainingAmount = data?.price - data?.paidAmount;
     send.paymentStatus = send?.remainingAmount === 0 ? "done" : "incomplete";
     send.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+
+    if (send.paymentStatus === "done") {
+      fetch(
+        `https://us-central1-firstproject-3ca46.cloudfunctions.net/subscribeToTopic?topic=PaymentDue&regToken=${send?.regToken}&type=unsubscribe`
+      )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      fetch(
+        `https://us-central1-firstproject-3ca46.cloudfunctions.net/subscribeToTopic?topic=PaymentDue&regToken=${send?.regToken}&type=subscribe`
+      )
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+
     await firebase
       .firestore()
       .collection("orders")
