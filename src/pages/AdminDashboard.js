@@ -8,7 +8,7 @@ import {
   Row,
   Col,
 } from "react-bootstrap";
-import { useParams, Redirect } from "react-router-dom";
+import { useParams, Redirect, useHistory } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import UserTable from "./components/UserTable";
 import OrderTable from "./components/OrderTable";
@@ -117,6 +117,15 @@ class AdminDashboard extends Component {
             onClick={this.setNotify.bind(this, true)}
           >
             Notify
+          </Button>
+          <Button
+            variant={"dark"}
+            style={{ marginLeft: "10px" }}
+            onClick={() => {
+              this.props.setToken(undefined);
+            }}
+          >
+            Logout
           </Button>
         </Navbar>
         {this.returnTable()}
@@ -470,6 +479,9 @@ function EmailModal(props) {
 
 export default function FAdminDashboard(props) {
   var { page } = useParams();
+  var history = useHistory();
 
-  return <AdminDashboard page={page} history={props.history} />;
+  return (
+    <AdminDashboard page={page} history={history} setToken={props.setToken} />
+  );
 }
