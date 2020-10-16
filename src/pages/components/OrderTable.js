@@ -25,6 +25,7 @@ export default function UserTable() {
   const [confirm, setConfirm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [sortby, Setsortby] = useState("asc");
+  const [downloading, setdownloading] = useState(false);
 
   const [selected, setSelected] = useState(false);
   const [selectedOrders, setSelectedOrders] = useState([]);
@@ -154,6 +155,52 @@ export default function UserTable() {
           >
             Cancel
           </Button>
+          <Button
+            variant={"dark"}
+            style={{
+              marginLeft: "10px",
+              marginBottom: "10px",
+              marginTop: "10px",
+              width: "min-content",
+            }}
+            onClick={async () => {
+              //
+              setdownloading(true);
+              var res = await fetch(
+                "http://localhost:5001/firstproject-3ca46/us-central1/createOrderCSV"
+                // "http://localhost:5001/firstproject-3ca46/us-central1/getUserCSV"
+              );
+              var resjson = await res.json();
+              const url = window.URL.createObjectURL(new Blob([resjson.file]));
+              const link = document.createElement("a");
+              link.href = url;
+              link.setAttribute(
+                "download",
+                `Orders_${moment().format("DD-MM-YYYY")}.csv`
+              );
+              document.body.appendChild(link);
+              setdownloading(false);
+              link.click();
+            }}
+            disabled={downloading}
+          >
+            <div style={{ display: "flex" }}>
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                variant="light"
+                aria-hidden="true"
+                style={{
+                  display: downloading ? "block" : "none",
+                  marginRight: "5px",
+                  color: "white",
+                }}
+              />
+              <h6>Download</h6>
+            </div>
+          </Button>
         </Col>
         <Col>
           <DropdownButton
@@ -239,6 +286,7 @@ export default function UserTable() {
                 {loading ? (
                   <Spinner
                     animation="border"
+                    variant="light"
                     style={{ marginRight: "auto", marginLeft: "auto" }}
                   />
                 ) : (

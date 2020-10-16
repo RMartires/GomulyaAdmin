@@ -10,6 +10,13 @@ td {
   color: #d5d8db !important;
 }
 
+.orderStatusConfirmed {
+  color: green !important;
+}
+.orderStatusPending {
+  color: red !important;
+}
+
 .modal-content {
   background-color: #0e101c !important;
   color: #b5bbbf !important;

@@ -1,12 +1,8 @@
--payment
-
-sr no.
+--order
 name
-payment stats
-tot
-paid amt
-remaining amt
-payment method
-qut
+qty
 freq
-ct no.
+startdate
+phoneNumber
+address
+createdAT

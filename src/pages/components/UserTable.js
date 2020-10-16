@@ -12,6 +12,7 @@ import {
 import "./Users.css";
 import BlockUi from "react-block-ui";
 import "react-block-ui/style.css";
+import moment from "moment";
 import UserModal from "./UserModal";
 const firebase = require("firebase");
 
@@ -151,7 +152,10 @@ export default function UserTable(props) {
               const url = window.URL.createObjectURL(new Blob([resjson.file]));
               const link = document.createElement("a");
               link.href = url;
-              link.setAttribute("download", "Users_.csv");
+              link.setAttribute(
+                "download",
+                `Users_${moment().format("DD-MM-YYYY")}.csv`
+              );
               document.body.appendChild(link);
               setdownloading(false);
               link.click();
@@ -164,6 +168,7 @@ export default function UserTable(props) {
                 animation="border"
                 size="sm"
                 role="status"
+                variant="light"
                 aria-hidden="true"
                 style={{
                   display: downloading ? "block" : "none",
@@ -229,6 +234,7 @@ export default function UserTable(props) {
                 {loading ? (
                   <Spinner
                     animation="border"
+                    variant="light"
                     style={{ marginRight: "auto", marginLeft: "auto" }}
                   />
                 ) : (

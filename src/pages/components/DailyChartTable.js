@@ -187,6 +187,7 @@ export default function UserTable() {
                 size="sm"
                 role="status"
                 aria-hidden="true"
+                variant="light"
                 style={{
                   display: downloading ? "block" : "none",
                   marginRight: "5px",
@@ -412,6 +413,7 @@ export default function UserTable() {
                 {loading ? (
                   <Spinner
                     animation="border"
+                    variant="light"
                     style={{ marginRight: "auto", marginLeft: "auto" }}
                   />
                 ) : (
