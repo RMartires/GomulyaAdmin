@@ -226,7 +226,7 @@ export default function UserTable(props) {
                   <th>No.</th>
                   <th>Name</th>
                   <th>Contact</th>
-                  <th className="tablecontent">Email</th>
+                  {/* <th className="tablecontent">Email</th> */}
                   <th className="tablecontent">Address</th>
                 </tr>
               </thead>
@@ -260,7 +260,7 @@ export default function UserTable(props) {
                         <td>{index + 1}</td>
                         <td>{user.name}</td>
                         <td>{user.phoneNumber}</td>
-                        <td className="tablecontent">{user.email}</td>
+                        {/* <td className="tablecontent">{user.email}</td> */}
                         <td className="tablecontent">{user.address}</td>
                       </tr>
                     );

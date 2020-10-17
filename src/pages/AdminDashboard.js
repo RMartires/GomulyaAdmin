@@ -161,7 +161,7 @@ function NotifyModal(props) {
     "vasco",
   ];
   const [selectedlocations, setSelectedlocations] = useState(locations);
-  const type = props.type;
+  var type = props.type;
 
   const selectItem = (con, value) => {
     if (con) {
@@ -176,7 +176,7 @@ function NotifyModal(props) {
     setSend(true);
     console.log(data);
     try {
-      if ((type = "order")) {
+      if (type === "order") {
         var doneSending = 0;
         await new Promise((res, rej) => {
           selectedlocations.forEach(async (loc) => {
@@ -190,7 +190,7 @@ function NotifyModal(props) {
             }
           });
         });
-      } else if ((type = "payment")) {
+      } else if (type === "payment") {
         await fetch(
           // `http://localhost:5001/firstproject-3ca46/us-central1/Notify?title=${data.title}&body=${data.body}&topic=${loc}`
           `https://us-central1-firstproject-3ca46.cloudfunctions.net/Notify?title=${data.title}&body=${data.body}&topic=PaymentDue`
